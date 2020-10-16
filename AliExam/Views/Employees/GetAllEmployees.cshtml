@@ -1,0 +1,49 @@
+﻿@model IEnumerable<AliExam.Models.Employees>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+
+</head>
+<body>
+
+    <div class="container">
+        <h2>Employee Table</h2><br />
+        <a class="btn btn-success" href="/Employees/AddEmployee">New Employee</a><br /><br />
+        <table class="table" id="tblVacations">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name Surname</th>
+                    <th>Department name</th>
+                    <th>Update</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{int RowNo = 0;}
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td>@{RowNo++;} @RowNo</td>
+                    <td>@item.Name @item.Surname</td>
+                    <td>@item.Department.DepartName</td>
+                    <td>@Html.ActionLink("Update", "UpdateEmployee", "Employees", new { id = item.Id }, new { @class = "btn btn-primary" })</td>
+                    <td>@Html.ActionLink("Delete", "DeleteEmployee", "Employees", new { id = item.Id }, new { @class = "btn btn-danger" })</td>
+                </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

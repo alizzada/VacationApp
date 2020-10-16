@@ -1,0 +1,145 @@
+﻿@model IEnumerable<AliExam.Models.Departments>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>AddVacation</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <form class="form-group">
+                    <div class="form-group">
+                        <label for="exampleFormControlSelect1">Example select</label>
+                        <select class="form-control" id="depSelect">
+                            @foreach (var item in Model)
+                            {
+                                
+                                <option value="@item.Id" selected="">@item.DepartName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlSelect1">Example select</label>
+                        <select class="form-control" id="sectionSelect">
+                            <option selected=""></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlSelect1">Example select</label>
+                        <select class="form-control" id="empSelect">
+                            <option selected=""></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="date" id="startDate" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Day count</label>
+                        <input class="form-control" id="dayCount">
+                    </div>
+                    <div class="form-group">
+                        <input type="date" id="endDate" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="offDays" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <input type="date" id="workDate" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <input type="button" id="btnSubmit" class="btn btn-success" value="Submit">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script>
+        $('#depSelect').change(function () {
+            if ($(this).data('option') === undefined) {
+                $(this).data('option', $('#sectionSelect option').clone());
+            }
+
+            var id = $(this).val();
+
+            fetch("/Vacation/getSections/" + id).then(response => response.json()).then(res => {
+                console.log(res);
+                let options = '';
+                $.each(res, function (index, value) {
+                    let option = '<option value=' + value.id + '>' + value.departName + '</option>';
+                    options += option;
+                });
+
+                $('#sectionSelect').html(options);
+            });
+        });
+
+        $('#sectionSelect').change(function () {
+            if ($(this).data('option') === undefined) {
+                $(this).data('option', $('#empSelect option').clone());
+            }
+
+            var id = $(this).val();
+            fetch("/Vacation/GetEmployees/" + id).then(response => response.json()).then(res => {
+                let options = '';
+                $.each(res, function (index, value) {
+                    let option = '<option value=' + value.id + '>' + value.name + ' ' + value.surname + '</option>';
+                    options += option;
+                });
+
+                $('#empSelect').html(options);
+            });
+
+        });
+
+        $('#dayCount').focusout(function () {
+            console.log($(this).val());
+            let daysCount = $(this).val();
+            let startDate = $('#startDate').val();
+            let url = '/Vacation/Calculate?daysCount=' + daysCount + '&startDate=' + startDate;
+            fetch(url).then(response => response.json()).then(res => {
+                var endDate = new Date(res.endDate);
+                endDate = endDate.getFullYear() + "-" + (endDate.getMonth() + 1) + "-" + endDate.getDate()
+                var workDate = new Date(res.workDate);
+                workDate = workDate.getFullYear() + "-" + (workDate.getMonth() + 1) + "-" + workDate.getDate();
+                $('#endDate').val(endDate);
+                $('#offDays').val(res.offDays);
+                $('#workDate').val(workDate);
+            });
+        });
+
+        $('#btnSubmit').click(function () {
+
+            $.ajax({
+                type: 'POST',
+                url: '/Vacation/Add',
+                dataType: 'json',
+                contentType:'application/x-www-form-urlencoded',
+                data: {
+                    VacationStart: $('#startDate').val(),
+                    VacationDayCount:$('#dayCount').val(),
+                    WorkDay: $('#workDate').val(),
+                    EmployeesId: $('#empSelect').val()
+                },
+                success: function (data) {
+                    console.log("success");
+                    //window.open("/Vacation/GetAllVacation");
+                    location.href = "/Vacation/GetAllVacation";
+                },
+                error: function (data) {
+
+                }
+            });   
+        });
+    </script>
+</body>
+</html>

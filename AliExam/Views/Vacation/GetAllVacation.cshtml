@@ -1,0 +1,74 @@
+﻿@model IEnumerable<AliExam.Models.EmployeesVacations>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+
+</head>
+<body>
+
+    <div class="container">
+        <h2>Basic Table</h2><br />
+        <p class="clearfix">
+            <a class="btn btn-success float-left" href="/Vacation/AddVacation">New Vacation</a>
+            <a class="btn btn-primary float-right" href="/Employees/GetAllEmployees">Employees list</a>
+        </p>
+        
+        <table class="table" id="tblVacations">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name Surname</th>
+                    <th>Start date</th>
+                    <th>Day count</th>
+                    <th>Work day</th>
+                    <th>Tools</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{int RowNo = 0;}
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@{RowNo++;} @RowNo</td>
+                        <td>@item.Employees.Name @item.Employees.Surname</td>
+                        <td>@item.VacationStart.ToShortDateString()</td>
+                        <td>@item.VacationDayCount</td>
+                        <td>@item.WorkDay.ToShortDateString()</td>
+                        <td><a class="btn btn-danger btnDelete" data-id="@item.Id">Delete</a></td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(function () {
+            $("#tblVacations").on("click", ".btnDelete", function () {
+                var btn = $(this);
+                if (confirm("Do you want delete this vacation?")) {
+                    var id = btn.data("id");
+                    $.ajax({
+                        type: "GET",
+                        url: "/Vacation/DeleteVacation/" + id,
+                        success: function () {
+                            btn.parent().parent().remove();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
+

@@ -1,0 +1,53 @@
+﻿@model AliExam.ViewModels.EmployeesFormViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>AddEmployee</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <link href="~/css/validation.css" rel="stylesheet" />
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+
+    <script src="~/jquery-validate/jquery.validate.min.js"></script>
+    <script src="~/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                @using (Html.BeginForm("AddEmployee", "Employees", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.Employees.Id)
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Employees.Name)
+                        @Html.TextBoxFor(m => m.Employees.Name, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Employees.Name)
+
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Employees.Surname)
+                        @Html.TextBoxFor(m => m.Employees.Surname, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Employees.Surname)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Employees.DepartmentId)
+                        @Html.DropDownListFor(m => m.Employees.DepartmentId, new SelectList(Model.Departments, "Id", "DepartName"), "Select Department", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Employees.DepartmentId)
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                }
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
